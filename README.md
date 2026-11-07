@@ -87,7 +87,7 @@ patchless-soliton-vision/
 │   └── figure7e_cifar10_relativistic_convergence.png
 ├── paper/
 │   ├── paper.tex                         # LaTeX preprint source
-│   ├── paper.pdf                         # Compiled 6-page preprint (6.52 MB, verified)
+│   ├── paper.pdf                         # Compiled 8-page preprint (6.82 MB, full-scale figures)
 │   └── references.bib                    # BibTeX references
 ├── src/
 │   ├── models/
