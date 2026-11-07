@@ -143,7 +143,12 @@ Inverting for velocity yields:
 \begin{equation}
     \dot{\mathbf{\theta}} = \frac{\mathbf{p}}{\sqrt{m^2 + \|\mathbf{p}\|^2 / c^2}} \implies \|\dot{\mathbf{\theta}}\| < c \quad \forall t \ge 0
 \end{equation}
-This enforces a strict subluminal speed ceiling $c$ on parameter updates, eliminating gradient explosion during spatial foveation migrations.
+This enforces a strict subluminal speed ceiling $c$ on parameter updates, eliminating gradient explosion during spatial foveation migrations. Under $L_2$ reconstruction energy $\mathcal{L} = \frac{1}{2}\iint \|\hat{I} - I\|^2 du dv$, each soliton experiences analytical saccadic and virial scale forces:
+\begin{equation}
+    \frac{\partial \psi_k}{\partial \mu_{u,k}} = \frac{u - \mu_{u,k}}{\sigma_{u,k}^2}\psi_k, \quad \frac{\partial \psi_k}{\partial \sigma_{u,k}} = \frac{(u - \mu_{u,k})^2}{\sigma_{u,k}^3}\psi_k
+    \label{eq:foveation_forces}
+\end{equation}
+where peripheral high-frequency residuals $(u - \mu_{u,k})^2 > \sigma_{u,k}^2$ induce $1/\sigma^3$ virial contraction onto sharp contours.
 
 \begin{figure}[t!]
 \centering
@@ -154,10 +159,12 @@ This enforces a strict subluminal speed ceiling $c$ on parameter updates, elimin
 
 \begin{figure*}[t!]
 \centering
-\includegraphics[width=0.40\textwidth]{../figures/figure7a_cifar10_real_images_and_soliton_reconstruction.png} \hfill
-\includegraphics[width=0.40\textwidth]{../figures/figure7b_cifar10_super_resolution_256.png}
+\includegraphics[width=0.38\textwidth]{../figures/figure7a_cifar10_real_images_and_soliton_reconstruction.png} \hfill
+\includegraphics[width=0.38\textwidth]{../figures/figure7b_cifar10_super_resolution_256.png}
+\vspace{-2mm}
 \caption{\textbf{Natural Photographic CIFAR-10 RGB Evaluation}. Left: Ground truth $32 \times 32 \times 3$ RGB airplane image and continuous $K=96$ soliton field reconstruction (MSE: $0.02867$, PSNR: $15.43\text{ dB}$). Right: Zero-shot $256 \times 256$ continuous analytical super-resolution ($64\times$ sample density) demonstrating smooth sub-pixel color waveflow compared to grid-locked bicubic interpolation blur.}
 \label{fig:cifar_recon}
+\vspace{-2mm}
 \end{figure*}
 
 \section{Empirical Evaluation}
@@ -216,26 +223,27 @@ A single flat linear layer ($z \in \mathbb{R}^{32} \to 10$) optimized under Eule
 \subsection{Natural Photographic CIFAR-10 RGB Evaluation}
 We evaluated the architecture on the challenging, unaligned natural photographic images of CIFAR-10 ($32 \times 32 \times 3$ RGB):
 \begin{enumerate}
-    \item \textbf{Multi-Channel RGB Reconstruction:} A $K=96$ multi-spectral soliton field ($A_k \in \mathbb{R}^3$) converged to MSE $\mathbf{0.028668}$ (PSNR $\mathbf{15.43\text{ dB}}$). Evaluating zero-shot at $256 \times 256$ ($64\times$ sample density) renders seamless color waveflow, avoiding the blocky pixelation of bicubic upsampling (Figure~\ref{fig:cifar_recon}).
-    \item \textbf{Patchless 10-Class Classification:} Projecting CIFAR-10 RGB images onto $K=64$ continuous solitons yields a 192-dimensional embedding ($z \in \mathbb{R}^{3 \times 64}$), compressing the $3,072$ raw pixels by \textbf{16$\times$}. A single flat linear layer with strictly \textbf{zero hidden layers, zero convolutions, and zero attention heads} achieved \textbf{32.00\% test accuracy} (Figure~\ref{fig:cifar_and_so2}, left)---over $3.2\times$ higher than the $10.0\%$ random baseline and comparable to raw-pixel linear classifiers while using $16\times$ fewer parameters and preserving coordinate continuity.
+    \item \textbf{Multi-Channel RGB Reconstruction:} A $K=96$ multi-spectral soliton field ($A_k \in \mathbb{R}^3$) converged to MSE $\mathbf{0.028668}$ (PSNR $\mathbf{15.43\text{ dB}}$). Evaluating zero-shot at $256 \times 256$ ($64\times$ sample density) renders seamless color waveflow, avoiding the blocky pixelation of bicubic upsampling (Figure~\ref{fig:cifar_recon}), while RGB solitons autonomously foveate onto object contours (Figure~\ref{fig:cifar_and_so2}, left).
+    \item \textbf{Patchless 10-Class Classification:} Projecting CIFAR-10 RGB images onto $K=64$ continuous solitons yields a 192-dimensional embedding ($z \in \mathbb{R}^{3 \times 64}$), compressing the $3,072$ raw pixels by \textbf{16$\times$}. A single flat linear layer with strictly \textbf{zero hidden layers, zero convolutions, and zero attention heads} achieved \textbf{32.00\% test accuracy} (Figure~\ref{fig:cifar_and_so2}, center)---over $3.2\times$ higher than the $10.0\%$ random baseline and comparable to raw-pixel linear classifiers while using $16\times$ fewer parameters and preserving coordinate continuity.
 \end{enumerate}
 
 \begin{figure*}[t!]
 \centering
-\includegraphics[width=0.34\textwidth]{../figures/figure7d_cifar10_patchless_classification_matrix.png} \qquad
-\includegraphics[width=0.34\textwidth]{../figures/figure6e_rotational_equivariance_so2.png}
+\includegraphics[height=1.60in]{../figures/figure7c_cifar10_rgb_soliton_foveation.png} \hfill
+\includegraphics[height=1.60in]{../figures/figure7d_cifar10_patchless_classification_matrix.png} \hfill
+\includegraphics[height=1.60in]{../figures/figure6e_rotational_equivariance_so2.png}
 \vspace{-3mm}
-\caption{\textbf{Empirical Classification and Invariance Benchmarks}. Left: CIFAR-10 10-Class Confusion Matrix attaining \textbf{32.00\% test accuracy} with a flat linear classifier on 192 continuous soliton projections ($16\times$ raw pixel compression, 0 hidden layers). Right: Continuous $\mathrm{SO}(2)$ Lie Rotational Invariance demonstrating stable token energy $\mathbb{E}[\|z\|^2]$ across rotation angles $\theta \in [0^\circ, 315^\circ]$.}
+\caption{\textbf{Empirical RGB Foveation, Classification, and Lie Invariance}. Left: Multi-spectral CIFAR-10 RGB soliton foveation manifold ($K=96$). Center: Patchless CIFAR-10 10-Class Confusion Matrix attaining \textbf{32.00\% test accuracy} with a flat linear classifier ($16\times$ compression, 0 hidden layers). Right: Continuous $\mathrm{SO}(2)$ Lie Rotational Invariance demonstrating stable token energy $\mathbb{E}[\|z\|^2]$ across $\theta \in [0^\circ, 315^\circ]$.}
 \label{fig:cifar_and_so2}
 \vspace{-3mm}
 \end{figure*}
 
 \subsection{Continuous $\mathrm{SO}(2)$ Lie Rotational Equivariance}
-Standard patch-based Vision Transformers fail catastrophically when inputs are rotated by non-grid angles (e.g., $37.5^\circ$) due to rigid patch boundaries. We evaluated our continuous solitons under continuous Lie rotations $\theta \in [0^\circ, 360^\circ]$:
+Discrete $P \times P$ patch grids fracture continuous planar rotations $\mathrm{SO}(2)$ down to the discrete dihedral subgroup $D_4$, degrading when inputs are rotated by non-orthogonal angles (e.g., $37.5^\circ$). Under continuous Lie rotations $\mathbf{x}' = R(\theta)\mathbf{x}$ with $\det R(\theta) = +1$:
 \begin{equation}
     R(\theta) = \begin{bmatrix} \cos\theta & -\sin\theta \\ \sin\theta & \cos\theta \end{bmatrix} \in \mathrm{SO}(2)
 \end{equation}
-As shown in Figure~\ref{fig:cifar_and_so2} (right), mean token representation energy $\mathbb{E}[\|z\|^2]$ remains exceptionally stable across rotations, demonstrating intrinsic continuous rotational equivariance.
+the soliton inner product (Equation~\ref{eq:projection}) is analytically equivariant under the coadjoint action $\mathbf{\mu}_k \mapsto R(\theta)\mathbf{\mu}_k$, $\mathbf{k}_k \mapsto R(\theta)\mathbf{k}_k$. As shown in Figure~\ref{fig:cifar_and_so2} (right), mean token representation energy $\mathbb{E}[\|z\|^2]$ remains stable across continuous rotations.
 
 \section{Computational Complexity Analysis}
 
@@ -273,10 +281,10 @@ As summarized in Table~\ref{tab:complexity}, Patchless Soliton Vision fundamenta
 \end{enumerate}
 
 \section{Conclusion}
-Patchless Soliton Vision provides a rigorous alternative to discrete patchification. By formulating perception as an analytical superposition of continuous Gabor-Morlet solitons on $\mathcal{C}^\infty$ manifolds, visual models escape the CFL depth catastrophe, foveate autonomously onto salient contours, achieve zero-shot continuous super-resolution, and preserve continuous $\mathrm{SO}(2)$ Lie equivariance.
+Patchless Soliton Vision provides a rigorous, physically grounded alternative to discrete patchification in modern computer vision. By formulating visual perception as an analytical superposition of continuous Gabor-Morlet solitons on $\mathcal{C}^\infty$ manifolds, visual models escape the Courant-Friedrichs-Lewy depth catastrophe, foveate autonomously onto salient contours via analytical virial forces, achieve zero-shot continuous super-resolution, and preserve continuous $\mathrm{SO}(2)$ Lie rotational equivariance. Future work will scale continuous soliton fields to 3D volumetric spacetime manifolds and relativistic optical flows. Open-source code and interactive 60 FPS phase-space laboratory: {\small\texttt{github.com/shu195/patchless-soliton-vision}}.
 
 \begin{thebibliography}{99}
-\fontsize{7.0pt}{8.0pt}\selectfont
+\fontsize{7.2pt}{8.35pt}\selectfont
 \setlength{\itemsep}{0pt}
 \setlength{\parskip}{0pt}
 \setlength{\parsep}{0pt}
