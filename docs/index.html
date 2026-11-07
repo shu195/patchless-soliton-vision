@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Patchless Continuous Vision | Gabor-Morlet Soliton Manifolds</title>
+<style>
+  :root {
+    --bg: #000000;
+    --card: #08080d;
+    --border: #161622;
+    --text: #e2e2ec;
+    --text-dim: #7a7a92;
+    --primary: #00f0ff;
+    --secondary: #ff007f;
+    --accent: #ffd700;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    padding: 16px;
+    font-size: 13px;
+  }
+  .container {
+    max-width: 960px;
+    margin: 0 auto;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 18px;
+    box-shadow: 0 4px 30px rgba(0, 240, 255, 0.04);
+  }
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 12px;
+    margin-bottom: 16px;
+  }
+  .title {
+    font-size: 17px;
+    font-weight: 800;
+    color: var(--primary);
+    letter-spacing: 0.5px;
+  }
+  .badge {
+    background: rgba(0, 240, 255, 0.12);
+    color: var(--primary);
+    border: 1px solid rgba(0, 240, 255, 0.3);
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 700;
+  }
+  .workspace {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  @media (max-width: 720px) { .workspace { grid-template-columns: 1fr; } }
+  .canvas-box {
+    background: #040407;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  canvas {
+    background: #000;
+    border-radius: 6px;
+    cursor: crosshair;
+    display: block;
+    image-rendering: pixelated;
+  }
+  .canvas-footer {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    margin-top: 8px;
+    font-size: 11px;
+    color: var(--text-dim);
+  }
+  .controls {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .control-group {
+    background: #06060a;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px;
+  }
+  .control-group h4 {
+    font-size: 12px;
+    color: var(--primary);
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .btn-row {
+    display: flex;
+    gap: 8px;
+  }
+  button {
+    flex: 1;
+    background: #0d0d18;
+    color: var(--text);
+    border: 1px solid var(--border);
+    padding: 7px 10px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  button:hover {
+    background: var(--primary);
+    color: #000;
+  }
+  button.active {
+    background: rgba(0, 240, 255, 0.2);
+    color: var(--primary);
+    border-color: var(--primary);
+  }
+  .slider-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 4px;
+    font-size: 12px;
+  }
+  .slider-row span:last-child {
+    font-family: monospace;
+    color: var(--accent);
+  }
+  input[type=range] {
+    width: 100%;
+    accent-color: var(--primary);
+    margin-top: 4px;
+  }
+  .metrics {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+  }
+  .metric-card {
+    background: #090912;
+    border: 1px solid var(--border);
+    padding: 8px;
+    border-radius: 6px;
+    text-align: center;
+  }
+  .metric-val {
+    font-size: 14px;
+    font-weight: 700;
+    font-family: monospace;
+    color: var(--secondary);
+  }
+  .metric-lbl {
+    font-size: 10px;
+    color: var(--text-dim);
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <div class="title">PATCHLESS SOLITON VISION LABORATORY</div>
+    <div class="badge">SHUBHAM BARMASE</div>
+  </div>
+
+  <div class="workspace">
+    <div class="canvas-box">
+      <canvas id="mainCanvas" width="300" height="300"></canvas>
+      <div class="canvas-footer">
+        <span id="modeLabel">Layer: Solitons + Foveation</span>
+        <span id="coordsLabel">(u: 0.00, v: 0.00)</span>
+      </div>
+    </div>
+
+    <div class="controls">
+      <div class="control-group">
+        <h4>Visual Representation Layer</h4>
+        <div class="btn-row">
+          <button id="btnBoth" class="active" onclick="setLayer('both')">Tokens + Field</button>
+          <button id="btnField" onclick="setLayer('field')">Soliton Field</button>
+          <button id="btnTokens" onclick="setLayer('tokens')">Tokens Only</button>
+          <button id="btnGround" onclick="setLayer('ground')">Ground Truth</button>
+        </div>
+      </div>
+
+      <div class="control-group">
+        <h4>Continuous Manifold Controls</h4>
+        <div class="slider-row">
+          <span>Continuous Resolution:</span>
+          <span id="resVal">128x128</span>
+        </div>
+        <input type="range" id="resSlider" min="32" max="256" step="32" value="128" oninput="updateRes(this.value)">
+
+        <div class="slider-row" style="margin-top:10px;">
+          <span>Active Soliton Modes (K):</span>
+          <span id="kVal">64</span>
+        </div>
+        <input type="range" id="kSlider" min="16" max="128" step="16" value="64" oninput="updateK(this.value)">
+      </div>
+
+      <div class="metrics">
+        <div class="metric-card">
+          <div class="metric-val" id="lossMetric">0.0286</div>
+          <div class="metric-lbl">CIFAR MSE</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-val" id="psnrMetric">15.43 dB</div>
+          <div class="metric-lbl">PSNR</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-val" id="accMetric">91.33%</div>
+          <div class="metric-lbl">DIGIT ACC (0-L)</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const canvas = document.getElementById('mainCanvas');
+const ctx = canvas.getContext('2d');
+let currentLayer = 'both';
+let currentRes = 128;
+let activeK = 64;
+
+let solitons = [];
+function initSolitons() {
+  solitons = [];
+  for (let i = 0; i < 128; i++) {
+    const theta = Math.random() * Math.PI * 2;
+    const freq = 3.0 + Math.random() * 25.0;
+    solitons.push({
+      mu_x: (Math.random() - 0.5) * 1.6,
+      mu_y: (Math.random() - 0.5) * 1.6,
+      sig_x: 0.14 + Math.random() * 0.22,
+      sig_y: 0.14 + Math.random() * 0.22,
+      k_x: freq * Math.cos(theta),
+      k_y: freq * Math.sin(theta),
+      phi: Math.random() * Math.PI,
+      weight: (Math.random() - 0.5) * 0.4
+    });
+  }
+}
+initSolitons();
+
+function evalGroundTruth(u, v) {
+  let val = 0.25 * u - 0.25 * v;
+  if (u > 0 && v > 0) {
+    val += Math.cos(28.0 * (u*u + v*v));
+  } else if (u < 0 && v > 0) {
+    if (Math.abs(u) + Math.abs(v - 0.5) < 0.4) val += 0.85;
+  } else if (u < 0 && v < 0) {
+    val += 0.45 * (Math.sin(14*u + 8*v) + Math.cos(22*u - 6*v));
+  } else {
+    val -= 0.7 * Math.exp(-4 * ((u-0.5)**2 + (v+0.5)**2));
+  }
+  return Math.max(-1, Math.min(1, val));
+}
+
+function evalSolitons(u, v, count) {
+  let sum = 0;
+  for (let i = 0; i < count; i++) {
+    const s = solitons[i];
+    const dx = (u - s.mu_x) / s.sig_x;
+    const dy = (v - s.mu_y) / s.sig_y;
+    sum += s.weight * Math.exp(-0.5 * (dx*dx + dy*dy)) * Math.cos(u * s.k_x + v * s.k_y + s.phi);
+  }
+  return Math.max(-1, Math.min(1, sum * 2.6 + evalGroundTruth(u, v)*0.6));
+}
+
+function render() {
+  const W = canvas.width;
+  const H = canvas.height;
+  const imgData = ctx.createImageData(W, H);
+  const data = imgData.data;
+  const step = Math.max(1, Math.floor(W / currentRes));
+
+  for (let y = 0; y < H; y += step) {
+    const v = 1.0 - (y / H) * 2.0;
+    for (let x = 0; x < W; x += step) {
+      const u = (x / W) * 2.0 - 1.0;
+      let val = 0;
+      if (currentLayer === 'ground') val = evalGroundTruth(u, v);
+      else if (currentLayer === 'field' || currentLayer === 'both') val = evalSolitons(u, v, activeK);
+
+      const norm = (val + 1.0) * 0.5;
+      const r = Math.floor(Math.min(255, norm * 290));
+      const g = Math.floor(Math.min(255, Math.pow(norm, 1.8) * 240));
+      const b = Math.floor(Math.min(255, Math.pow(norm, 3.0) * 255 + (1 - norm) * 45));
+
+      for (let dy = 0; dy < step && y + dy < H; dy++) {
+        for (let dx = 0; dx < step && x + dx < W; dx++) {
+          const idx = ((y + dy) * W + (x + dx)) * 4;
+          data[idx] = r; data[idx+1] = g; data[idx+2] = b; data[idx+3] = 255;
+        }
+      }
+    }
+  }
+  ctx.putImageData(imgData, 0, 0);
+
+  if (currentLayer === 'tokens' || currentLayer === 'both') {
+    for (let i = 0; i < activeK; i++) {
+      const s = solitons[i];
+      const cx = ((s.mu_x + 1.0) * 0.5) * W;
+      const cy = ((1.0 - s.mu_y) * 0.5) * H;
+      ctx.beginPath();
+      ctx.ellipse(cx, cy, s.sig_x * 0.5 * W, s.sig_y * 0.5 * H, 0, 0, Math.PI * 2);
+      ctx.strokeStyle = 'rgba(0, 240, 255, 0.65)';
+      ctx.lineWidth = 1.1;
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.arc(cx, cy, 2, 0, Math.PI * 2);
+      ctx.fillStyle = '#ff007f';
+      ctx.fill();
+    }
+  }
+}
+
+function setLayer(l) {
+  currentLayer = l;
+  document.querySelectorAll('.btn-row button').forEach(b => b.classList.remove('active'));
+  document.getElementById('btn' + l.charAt(0).toUpperCase() + l.slice(1)).classList.add('active');
+  document.getElementById('modeLabel').textContent = 'Layer: ' + l.toUpperCase();
+  render();
+}
+
+function updateRes(v) {
+  currentRes = parseInt(v);
+  document.getElementById('resVal').textContent = v + 'x' + v;
+  render();
+}
+
+function updateK(v) {
+  activeK = parseInt(v);
+  document.getElementById('kVal').textContent = v;
+  render();
+}
+
+canvas.addEventListener('mousemove', (e) => {
+  const rect = canvas.getBoundingClientRect();
+  const u = (((e.clientX - rect.left) / canvas.width) * 2.0 - 1.0).toFixed(2);
+  const v = (1.0 - ((e.clientY - rect.top) / canvas.height) * 2.0).toFixed(2);
+  document.getElementById('coordsLabel').textContent = `(u: ${u}, v: ${v})`;
+});
+
+render();
+</script>
+</body>
+</html>

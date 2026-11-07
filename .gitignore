@@ -1,0 +1,33 @@
+# Internal State Ledger (DO NOT COMMIT)
+context.md
+GEMINI.md
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+dist/
+build/
+
+# PyTorch checkpoints and large binaries
+data/*.pt
+data/*.npz
+data/*.parquet
+
+# LaTeX compilation artifacts
+paper/*.aux
+paper/*.log
+paper/*.out
+paper/*.bbl
+paper/*.blg
+paper/*.toc
+paper/*.fls
+paper/*.fdb_latexmk
+paper/*.synctex.gz
+
+# Cache
+.cache/
+.pytest_cache/
+.vscode/
+.idea/
