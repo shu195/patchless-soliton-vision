@@ -27,25 +27,25 @@
   \texttt{barmase32@gmail.com}
 }
 
-\date{\today}
+\date{November 8, 2026}
 
 \begin{document}
 
 \maketitle
 
 \begin{abstract}
-Vision Transformers (ViT) and modern convolutional networks partition visual space into discrete Cartesian grids---conventionally $16 \times 16$ or $4 \times 4$ pixel patches. While computationally ubiquitous, discrete spatial partitioning imposes an artificial coordinate bias, fractures continuous edges across rigid boundaries, and enforces quadratic self-attention bottlenecks over fixed token resolutions. In this work, we introduce \textbf{Patchless Soliton Vision}, a continuous visual architecture that eliminates discrete patch slicing entirely. Visual scenes are formulated as an analytical linear superposition of $K$ dynamic, anisotropic Gabor-Morlet solitons $\psi_k(u, v)$ over a continuous $\mathcal{C}^\infty(\mathbb{R}^2)$ spatial manifold. Each continuous token operates as an autonomous physical wave packet with independent degrees of freedom: a dynamic receptive field center $\mathbf{\mu}_k \in [-1, 1]^2$, an adaptive anisotropic bandwidth $\mathbf{\sigma}_k \in \mathbb{R}^+ \times \mathbb{R}^+$, and an internal carrier wavevector $\mathbf{k}_k \in \mathbb{R}^2$. Under Relativistic Euler-Lagrange phase flow with Lorentz speed clamping ($\|\dot{\mathbf{\theta}}\| < c$), tokens autonomously foveate onto high-curvature contours and fine textures while expanding over smooth background fields, satisfying the optimal Heisenberg-Gabor uncertainty bound $\Delta x \cdot \Delta k \ge 1/2$. In empirical evaluations across synthetic manifolds, architectural photography (\texttt{scipy.datasets.ascent}), and natural color images (CIFAR-10), the model demonstrates: (1) seamless zero-shot $\mathcal{C}^\infty$ continuous super-resolution up to $16\times$ sample density with analytical sub-pixel continuity; (2) \textbf{91.33\% test accuracy} on handwritten digit classification with strictly zero hidden layers; (3) continuous $\mathrm{SO}(2)$ Lie-rotational equivariance without Cartesian grid degradation; and (4) a $16\times$ compression of raw CIFAR-10 RGB pixels into continuous soliton embeddings, attaining 3.2$\times$ above-chance classification under a flat linear classifier.
+Vision Transformers and convolutional architectures partition visual space into discrete Cartesian grids, typically $16 \times 16$ or $4 \times 4$ pixel patches. Although computationally widespread, discrete partitioning imposes coordinate bias, fractures continuous edges across rigid boundaries, and restricts models to fixed token resolutions with quadratic self-attention complexity. We introduce \textbf{Patchless Soliton Vision}, a continuous visual formulation that eliminates discrete spatial slicing entirely. Visual fields are represented via an analytical linear superposition of $K$ dynamic, anisotropic Gabor-Morlet solitons $\psi_k(u, v)$ over a continuous spatial manifold $\Omega \subset \mathbb{R}^2$ with $\mathcal{C}^\infty$ smoothness. Each continuous token functions as an autonomous physical wave packet possessing independent degrees of freedom: a dynamic receptive field center $\mathbf{\mu}_k \in [-1, 1]^2$, an adaptive anisotropic bandwidth $\mathbf{\sigma}_k \in \mathbb{R}^+ \times \mathbb{R}^+$, and an internal carrier wavevector $\mathbf{k}_k \in \mathbb{R}^2$. Under Relativistic Euler-Lagrange phase flow with Lorentz velocity clamping ($\|\dot{\mathbf{\theta}}\| < c$), tokens autonomously foveate onto high-curvature contours and fine textures while expanding over smooth background fields, saturating the optimal Heisenberg-Gabor uncertainty bound $\Delta x \cdot \Delta k = 1/2$. Empirical evaluations on synthetic manifolds, architectural scenes (\texttt{scipy.datasets.ascent}), and natural color images (CIFAR-10) demonstrate: (1) zero-shot $\mathcal{C}^\infty$ continuous super-resolution up to $16\times$ sample density with analytical sub-pixel continuity; (2) \textbf{91.33\% test accuracy} on handwritten digit classification with strictly zero hidden layers; (3) continuous $\mathrm{SO}(2)$ Lie rotational equivariance without Cartesian grid artifacts; and (4) $16\times$ compression of raw CIFAR-10 RGB pixels into continuous soliton embeddings, attaining 3.2$\times$ above-chance classification under a flat linear readout.
 \end{abstract}
 
 \section{Introduction}
 
-The dominant paradigm of modern computer vision rests upon spatial discretization. Since the inception of the Vision Transformer (ViT)~\cite{dosovitskiy2020image} and its hierarchical derivatives such as DeiT~\cite{touvron2021training} and Swin Transformer~\cite{liu2021swin}, visual inputs $I \in \mathbb{R}^{H \times W \times C}$ are converted into discrete sequence tokens by tiling the image into a non-overlapping checkerboard of $P \times P$ pixel patches. Each patch is flattened and linearly mapped into a token vector $x_p \in \mathbb{R}^D$, upon which standard multi-head self-attention~\cite{vaswani2017attention} is evaluated.
+Modern computer vision relies predominantly on spatial discretization. Following the Vision Transformer (ViT)~\cite{dosovitskiy2020image} and subsequent hierarchical architectures such as DeiT~\cite{touvron2021training} and Swin Transformer~\cite{liu2021swin}, visual inputs $I \in \mathbb{R}^{H \times W \times C}$ are tiled into regular non-overlapping checkerboards of $P \times $P pixel patches. Flattened patch vectors $x_p \in \mathbb{R}^D$ form the discrete sequence input to multihead self-attention mechanisms~\cite{vaswani2017attention}.
 
-Despite remarkable empirical success on large-scale datasets, discrete patchification is a non-physical mathematical compromise:
+Despite strong empirical performance on large benchmarks, discrete patchification constitutes an unphysical compromise:
 \begin{enumerate}
-    \item \textbf{Cartesian Boundary Fracturing:} Physical visual scenes are continuous optical wavefields. Slicing an image into rigid square boundaries artificially fractures smooth oriented edges, contours, and gradients. High-frequency spatial information that straddles patch borders is degraded, introducing high-frequency aliasing artifacts.
-    \item \textbf{Resolution Inflexibility:} Discrete tokenizers lock architectures to fixed input resolutions. Processing out-of-distribution scales or continuous zooms requires heuristic bicubic positional embedding interpolation, which disrupts learned phase relationships.
-    \item \textbf{The Depth Catastrophe:} When patch tokens are propagated through deep hierarchical transformer or residual blocks~\cite{he2016deep}, layer-wise Jacobian compositions inflate the condition number of the parameter Hessian exponentially ($\kappa \sim \mathcal{O}(e^{2L})$)~\cite{barmase2026variational}. This Courant-Friedrichs-Lewy (CFL) depth catastrophe freezes early layers under physical isotropic dynamics, mandating complex adaptive coordinate preconditioning (e.g., Adam).
+    \item \textbf{Cartesian Boundary Fracturing:} Physical optical fields are continuous wave phenomena. Slicing images along rigid square boundaries fractures oriented edges, contours, and gradients, discarding phase coherence across borders and inducing high-frequency aliasing.
+    \item \textbf{Resolution Inflexibility:} Discrete tokenizers tie architectures to fixed grid dimensions. Processing alternate resolutions or continuous zooms requires heuristic bicubic interpolation of positional embeddings, distorting learned phase structures.
+    \item \textbf{The Depth Catastrophe:} Propagating tokens across deep hierarchical transformer or residual layers~\cite{he2016deep} yields layer-wise Jacobian products that exponentially inflate the parameter Hessian condition number ($\kappa \sim \mathcal{O}(e^{2L})$)~\cite{barmase2026variational}. This Courant-Friedrichs-Lewy (CFL) depth catastrophe stalls early layer convergence under physical isotropic dynamics, mandating adaptive coordinate preconditioning such as Adam.
 \end{enumerate}
 
 In biological vision, primates do not perceive scenes via discrete square patches. Classical neurophysiological discoveries by Hubel and Wiesel~\cite{hubel1959receptive} and theoretical formulations by Daugman~\cite{daugman1985uncertainty} demonstrated that simple cells in the primary visual cortex (V1) act as localized, oriented, continuous two-dimensional Gabor filters. Olshausen and Field~\cite{olshausen1996emergence} subsequently proved that such continuous wave packets emerge naturally as the optimal sparse coding basis for natural optical fields.
@@ -155,7 +155,7 @@ where peripheral high-frequency residuals $(u - \mu_{u,k})^2 > \sigma_{u,k}^2$ i
 \centering
 \includegraphics[width=0.49\textwidth]{../figures/figure6a_real_image_ascent_reconstruction.png} \hfill
 \includegraphics[width=0.49\textwidth]{../figures/figure6b_real_image_super_resolution_512.png}
-\caption{\textbf{Photographic Reconstruction and Zero-Shot $\mathcal{C}^\infty$ Super-Resolution} on real-world architecture (\texttt{scipy.datasets.ascent}). Left: Ground truth $128 \times 128$ scene and continuous $K=128$ soliton field reconstruction (MSE: $0.5238$). Right: Zero-shot evaluation at native $512 \times 512$ ($16\times$ sample density). The sub-pixel inset confirms smooth analytical waveflow along fine staircase railings and step edges without pixelation, staircase aliasing, or Cartesian grid artifacts.}
+\caption{\textbf{Photographic Reconstruction and Zero-Shot $\mathcal{C}^\infty$ Super-Resolution} on real architecture (\texttt{scipy.datasets.ascent}). Left: Ground truth $128 \times 128$ scene and continuous $K=128$ soliton field reconstruction (MSE: $0.5238$). Right: Zero-shot evaluation at native $512 \times 512$ ($16\times$ sample density). The sub-pixel inset confirms smooth analytical waveflow along fine staircase railings and step edges without pixelation, staircase aliasing, or Cartesian grid artifacts.}
 \label{fig:ascent_recon_and_superres}
 \end{figure*}
 
@@ -163,17 +163,17 @@ where peripheral high-frequency residuals $(u - \mu_{u,k})^2 > \sigma_{u,k}^2$ i
 \centering
 \includegraphics[width=0.48\textwidth]{../figures/figure6c_ascent_token_foveation_railings.png} \hfill
 \includegraphics[width=0.48\textwidth]{../figures/figure6e_rotational_equivariance_so2.png}
-\caption{\textbf{Autonomous Token Foveation \& Continuous $\mathrm{SO}(2)$ Lie Rotational Equivariance}. Left: Learned soliton centers $\mathbf{\mu}_k$ (crosses) and anisotropic support ellipses $\mathbf{\sigma}_k$ overlaid on photographic architecture. Receptive fields autonomously migrate toward high-contrast staircase railings and balusters while expanding over smooth background wall surfaces. Right: Mean continuous representation energy $\mathbb{E}[\|z\|^2]$ as the visual scene is rotated continuously through $\theta \in [0^\circ, 315^\circ]$, demonstrating perfect energy stability without the $D_4$ dihedral discretization artifacts of square patch grids.}
+\caption{\textbf{Autonomous Token Foveation and Continuous $\mathrm{SO}(2)$ Lie Rotational Equivariance}. Left: Learned soliton centers $\mathbf{\mu}_k$ (crosses) and anisotropic support ellipses $\mathbf{\sigma}_k$ overlaid on photographic architecture. Receptive fields autonomously migrate toward high-contrast staircase railings and balusters while expanding over smooth background wall surfaces. Right: Mean continuous representation energy $\mathbb{E}[\|z\|^2]$ as the visual scene is rotated continuously through $\theta \in [0^\circ, 315^\circ]$, demonstrating perfect energy stability without the $D_4$ dihedral discretization artifacts of square patch grids.}
 \label{fig:foveation_and_so2}
 \end{figure*}
 
 \section{Empirical Evaluation}
 
 \subsection{Multi-Aspect Synthetic Manifold Benchmark}
-We evaluated a challenging 4-quadrant synthetic scene ($128 \times 128 = 16,384$ coordinate samples) featuring:
+We evaluated a challenging four-quadrant synthetic scene ($128 \times 128 = 16,384$ coordinate samples) featuring:
 \begin{enumerate}
     \item \textbf{Quadratic Fresnel Chirp ($u>0, v>0$):} $\cos(30 R^2)$, frequency scaling quadratically with radius.
-    \item \textbf{Star Polygon ($u<0, v>0$):} Sharp non-differentiable geometric boundaries ($|u| + |v-0.5| < 0.4$).
+    \item \textbf{Star Polygon ($u<0, v>0$):} Sharp non-smooth geometric boundaries ($|u| + |v-0.5| < 0.4$).
     \item \textbf{Multi-Scale Interference ($u<0, v<0$):} $\sin(15u+10v) + \cos(25u-8v)$.
     \item \textbf{Gaussian Basin ($u>0, v<0$):} Smooth potential $-0.8 \exp(-4[(u-0.5)^2 + (v+0.5)^2])$.
 \end{enumerate}
@@ -195,7 +195,7 @@ Photographic Architecture (\texttt{ascent}) & $128 \times 128$ & $128$ & MSE: $\
 Zero-Shot Analytical Super-Resolution & $512 \times 512$ & $128$ & $\mathbf{16\times}$ sample density & Infinitely differentiable sub-pixel $\mathcal{C}^\infty$ waveflow \\
 Handwritten Digit Classification & $8 \times 8$ ($1,797$ samples) & $32$ & \textbf{91.33\% Test Accuracy} & \textbf{Strictly 0 Hidden Layers}, flat linear head \\
 Natural Photographic CIFAR-10 RGB & $32 \times 32 \times 3$ & $96$ & PSNR: $\mathbf{15.43\text{ dB}}$ (MSE $0.0287$) & Multi-spectral continuous emission $A_k \in \mathbb{R}^3$ \\
-CIFAR-10 10-Class Classification & $32 \times 32 \times 3$ ($3,000$ samples) & $64$ & \textbf{32.00\% Test Accuracy} & \textbf{16$\times$ raw pixel compression}, 0 hidden layers \\
+CIFAR-10 Ten-Class Classification & $32 \times 32 \times 3$ ($3,000$ samples) & $64$ & \textbf{32.00\% Test Accuracy} & \textbf{16$\times$ raw pixel compression}, 0 hidden layers \\
 Continuous $\mathrm{SO}(2)$ Lie Invariance & Multi-scale continuous & $32$ & Stable Energy $\mathbb{E}[\|z\|^2]$ & Exact coadjoint equivariance without $D_4$ grid fracture \\
 \hline\hline
 \end{tabular}%
@@ -231,15 +231,15 @@ A single flat linear layer ($z \in \mathbb{R}^{32} \to 10$) optimized under Eule
 \subsection{Natural Photographic CIFAR-10 RGB Evaluation}
 We evaluated the architecture on the challenging, unaligned natural photographic images of CIFAR-10 ($32 \times 32 \times 3$ RGB):
 \begin{enumerate}
-    \item \textbf{Multi-Channel RGB Reconstruction:} A $K=96$ multi-spectral soliton field ($A_k \in \mathbb{R}^3$) converged to MSE $\mathbf{0.028668}$ (PSNR $\mathbf{15.43\text{ dB}}$). Evaluating zero-shot at $256 \times 256$ ($64\times$ sample density) renders seamless color waveflow, avoiding the blocky pixelation of bicubic upsampling (Figure~\ref{fig:cifar_recon}), while RGB solitons autonomously foveate onto object contours (Figure~\ref{fig:cifar_foveation_matrix}, left).
-    \item \textbf{Patchless 10-Class Classification:} Projecting CIFAR-10 RGB images onto $K=64$ continuous solitons yields a 192-dimensional embedding ($z \in \mathbb{R}^{3 \times 64}$), compressing the $3,072$ raw pixels by \textbf{16$\times$}. A single flat linear layer with strictly \textbf{zero hidden layers, zero convolutions, and zero attention heads} achieved \textbf{32.00\% test accuracy} (Figure~\ref{fig:cifar_foveation_matrix}, right)---over $3.2\times$ higher than the $10.0\%$ random baseline and comparable to raw-pixel linear classifiers while using $16\times$ fewer parameters and preserving coordinate continuity.
+    \item \textbf{Polychromatic RGB Reconstruction:} A $K=96$ multi-spectral soliton field ($A_k \in \mathbb{R}^3$) converged to MSE $\mathbf{0.028668}$ (PSNR $\mathbf{15.43\text{ dB}}$). Evaluating zero-shot at $256 \times 256$ ($64\times$ sample density) renders seamless color waveflow, avoiding the blocky pixelation of bicubic upsampling (Figure~\ref{fig:cifar_recon}), while RGB solitons autonomously foveate onto object contours (Figure~\ref{fig:cifar_foveation_matrix}, left).
+    \item \textbf{Patchless Ten-Class Classification:} Projecting CIFAR-10 RGB images onto $K=64$ continuous solitons yields a 192-dimensional embedding ($z \in \mathbb{R}^{3 \times 64}$), compressing the $3,072$ raw pixels by \textbf{16$\times$}. A single flat linear layer with strictly \textbf{zero hidden layers, zero convolutions, and zero attention heads} achieved \textbf{32.00\% test accuracy} (Figure~\ref{fig:cifar_foveation_matrix}, right), exceeding the $10.0\%$ random baseline by over $3.2\times$ and remaining competitive with raw-pixel linear classifiers while using $16\times$ fewer parameters and preserving coordinate continuity.
 \end{enumerate}
 
 \begin{figure*}[t!]
 \centering
 \includegraphics[width=0.46\textwidth]{../figures/figure7c_cifar10_rgb_soliton_foveation.png} \hfill
 \includegraphics[width=0.46\textwidth]{../figures/figure7d_cifar10_patchless_classification_matrix.png}
-\caption{\textbf{Multi-Spectral CIFAR-10 RGB Soliton Foveation \& 10-Class Classification Matrix}. Left: Multi-spectral RGB soliton foveation manifold ($K=96$). Each ellipse indicates the spatial center $\mathbf{\mu}_k$ and anisotropic support $\mathbf{\sigma}_k$, colored by dominant RGB emission. Right: Full $10 \times 10$ test confusion matrix evaluated across 3,000 natural photographic test images. The model achieves \textbf{32.00\% test accuracy} ($3.2\times$ above random chance) with a strictly flat linear classifier ($16\times$ raw pixel compression, 0 hidden layers, 0 convolutions, and 0 attention heads).}
+\caption{\textbf{Multi-Spectral CIFAR-10 RGB Soliton Foveation and Ten-Class Classification Matrix}. Left: Multi-spectral RGB soliton foveation manifold ($K=96$). Each ellipse indicates the spatial center $\mathbf{\mu}_k$ and anisotropic support $\mathbf{\sigma}_k$, colored by dominant RGB emission. Right: Full $10 \times 10$ test confusion matrix evaluated across 3,000 natural photographic test images. The model achieves \textbf{32.00\% test accuracy} ($3.2\times$ above random chance) with a strictly flat linear classifier ($16\times$ raw pixel compression, 0 hidden layers, 0 convolutions, and 0 attention heads).}
 \label{fig:cifar_foveation_matrix}
 \end{figure*}
 
@@ -274,9 +274,9 @@ Tokenization Mechanism & Discrete $16 \times 16$ Grid Patch & Continuous Gabor S
 Token Sequence Length $N_T$ & $(H/P) \times (W/P)$ & Fixed $K$ (independent of $H, W$) \\
 Attention / Interaction Cost & $\mathcal{O}(N_T^2 \cdot D)$ Quadratic & $\mathcal{O}(K \cdot H W)$ Linear in Pixels \\
 Spatial Discontinuity Error & High (at patch edges) & Strictly Zero ($\mathcal{C}^\infty$ smooth) \\
-Out-of-Distribution Res. & Heuristic 2D Interpolation & Analytical Continuous Evaluation \\
+Continuous Resolution Scaling & Heuristic 2D Interpolation & Analytical Continuous Evaluation \\
 Depth Hierarchy Required & Deep ($L \ge 12$) & Strictly Flat ($L = 1$, 0 Hidden Layers) \\
-Hessian Condition Number $\kappa$ & $\mathcal{O}(e^{2L}) \sim 10^5$ (CFL Catastrophe) & $\mathcal{O}(1) \sim 23.1$ (Well-Conditioned) \\
+Hessian Condition Number $\kappa$ & $\mathcal{O}(e^{2L}) \sim 10^5$ (CFL Catastrophe) & $\mathcal{O}(1) \sim 23.1$ (Stable Dynamics) \\
 \hline\hline
 \end{tabular}%
 }
@@ -296,17 +296,17 @@ As summarized in Table~\ref{tab:complexity}, Patchless Soliton Vision fundamenta
 The foundational hypothesis of Patchless Soliton Vision is that Cartesian discretization in computer vision is an artifact of discrete pixel sensors, rather than an optimal perceptual representation. The mammalian primary visual cortex (V1) decomposes optical fields through continuous receptive fields whose profiles match the analytical Gabor-Morlet formulation (Equation~\ref{eq:soliton}). By enabling continuous migration ($\mathbf{\mu}_k$), anisotropic scaling ($\mathbf{\sigma}_k$), and wavevector orientation ($\mathbf{k}_k$), the model executes continuous saccadic foveation on $\mathcal{C}^\infty$ manifolds without rigid patch boundaries.
 
 \subsection{Analytical Virial Foveation Mechanics}
-The foveation behavior observed in Figure~\ref{fig:foveation_and_so2} and Figure~\ref{fig:cifar_foveation_matrix} is governed by the analytical parameter gradient with respect to bandwidth:
+The foveation behavior in Figures~\ref{fig:foveation_and_so2} and \ref{fig:cifar_foveation_matrix} is governed by the analytical parameter gradient with respect to bandwidth:
 \begin{equation}
     F_{\sigma} = -\frac{\partial \mathcal{L}}{\partial \sigma} = \iint_\Omega (\hat{I} - I) A \frac{(\mathbf{x} - \mathbf{\mu})^2}{\sigma^3} \psi \, du \, dv
 \end{equation}
-When a soliton overlaps a sharp boundary, the spatial residual $(\mathbf{x} - \mathbf{\mu})^2$ exceeds current variance $\sigma^2$, generating an attractive inward virial pressure ($F_\sigma < 0$) that drives $\sigma \to \sigma_{\min}$. Over smooth basins where spatial gradients vanish, this force relaxes, allowing the token to dilate and integrate wide context. This dynamically reproduces biological foveal magnification without heuristic multi-scale pyramids.
+When a soliton overlaps a sharp boundary, residual $(\mathbf{x} - \mathbf{\mu})^2 > \sigma^2$ generates an attractive inward virial pressure ($F_\sigma < 0$) driving $\sigma \to \sigma_{\min}$. Over smooth basins, this force relaxes, allowing tokens to dilate and integrate wide context, reproducing biological foveal magnification without heuristic pyramids.
 
 \subsection{Limitations and Future Directions}
 While Patchless Soliton Vision provides sub-pixel continuity and computational efficiency, several open frontiers remain:
 \textbf{(1) Spacetime Generalization:} Extending continuous solitons from 2D spatial manifolds to 3D volumetric fields ($u, v, w$) and 4D relativistic spacetime ($u, v, w, t$) for continuous video perception;
-\textbf{(2) Non-Abelian Gauge Invariance:} Generalizing from $\mathrm{SO}(2)$ Lie planar rotations to projective $\mathrm{SL}(3, \mathbb{R})$ homographies for perspective equivariance;
-\textbf{(3) Hardware-Accelerated Quadrature:} Evaluating continuous spatial integrals on unstructured coordinate point clouds using dedicated tensor cores and CUDA continuous integration kernels.
+\textbf{(2) Non-Abelian Gauge Symmetries:} Generalizing from $\mathrm{SO}(2)$ Lie planar rotations to projective $\mathrm{SL}(3, \mathbb{R})$ homographies for perspective equivariance;
+\textbf{(3) Hardware Accelerated Quadrature:} Evaluating continuous spatial integrals on unstructured coordinate point clouds using dedicated tensor cores and CUDA continuous integration kernels.
 
 \section{Conclusion}
 Patchless Soliton Vision provides a rigorous, physically grounded alternative to discrete patchification in modern computer vision. By formulating visual perception as an analytical superposition of continuous Gabor-Morlet solitons on $\mathcal{C}^\infty$ manifolds, visual models escape the Courant-Friedrichs-Lewy depth catastrophe, foveate autonomously onto salient contours via analytical virial forces, achieve zero-shot continuous super-resolution, and preserve continuous $\mathrm{SO}(2)$ Lie rotational equivariance. The architecture eliminates rigid Cartesian grids, demonstrating that high-precision perception and semantic representation can be achieved with strictly zero hidden layers. Open-source code, high-resolution figures, and interactive 60 FPS phase-space laboratory: {\small\texttt{github.com/shu195/patchless-soliton-vision}}.
