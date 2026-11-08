@@ -1,6 +1,7 @@
 # Patchless Soliton Vision: Autonomous Receptive Field Solitons on $\mathcal{C}^\infty$ Manifolds
 
 [![Author: Shubham Barmase](https://img.shields.io/badge/Author-Shubham%20Barmase-blue.svg)](https://github.com/shu195)
+[![DOI: 10.5281/zenodo.24050002](https://zenodo.org/badge/DOI/10.5281/zenodo.24050002.svg)](https://doi.org/10.5281/zenodo.24050002)
 [![Preprint: Paper 4](https://img.shields.io/badge/Paper-Preprint%20PDF-purple.svg)](paper/paper.pdf)
 [![Simulator: 60 FPS WebGL](https://img.shields.io/badge/Live-60%20FPS%20Simulator-brightgreen.svg)](https://shu195.github.io/patchless-soliton-vision/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
@@ -122,14 +123,16 @@ python benchmarks/benchmark_cifar10_solitons.py
 
 ---
 
-## 6. Scientific Citation Trilogy
+## 6. Scientific Citation Quadrilogy
 
 ```bibtex
 @article{barmase2026patchless,
   author    = {Shubham Barmase},
   title     = {Patchless Continuous Vision: Autonomous Receptive Field Solitons on C-Infinity Manifolds Without Grid Tokenization},
+  journal   = {CERN Zenodo},
+  doi       = {10.5281/zenodo.24050002},
   year      = {2026},
-  url       = {https://github.com/shu195/patchless-soliton-vision}
+  url       = {https://doi.org/10.5281/zenodo.24050002}
 }
 
 @article{barmase2026variational,
